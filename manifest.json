@@ -20,7 +20,7 @@
                   "http://www.facebook.com/*",
                   "https://facebook.com/*",
                   "https://www.facebook.com/*"],
-      "js": ["getnames.js"]
+      "js": ["script.js"]
     }
   ]
 }
