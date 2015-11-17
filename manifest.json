@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "Clifby",
+  "description": "Facebook group managing tool",
+  "version": "0.1",
+
+  "background": {
+    "page": "background.html"
+  },
+ 
+  "browser_action": {
+    "default_icon": "mapleleaf_icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://facebook.com/*",
+                  "http://www.facebook.com/*",
+                  "https://facebook.com/*",
+                  "https://www.facebook.com/*"],
+      "js": ["getnames.js"]
+    }
+  ]
+}
