@@ -10,7 +10,8 @@ for(var i = 0; i < elements.length; i++) {
 function send() {
     console.log('message sent');
     chrome.runtime.sendMessage({
-        names: names
+        names: names,
+        payload: 'names'
         }, function(response) {
             console.log('message received');
         }
