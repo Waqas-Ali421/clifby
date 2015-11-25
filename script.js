@@ -5,6 +5,7 @@ var elements = document.getElementsByClassName('fsl fwb fcb');
 for(var i = 0; i < elements.length; i++) {
   var element = elements[i];
   names.push(element.getElementsByTagName('a')[0].innerText);
+
 }
 
 function send() {
