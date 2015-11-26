@@ -6,6 +6,6 @@ chrome.runtime.sendMessage({payload: 'nameRequest'}, function(names) {
         var name = names[i];
         var newItem = document.createElement("li");
         newItem.innerHTML = name;
-        element.getElementsByClassName('list')[0].appendChild(newItem);
+        document.getElementsByClassName('list')[0].appendChild(newItem);
     }
 })
