@@ -1,32 +1,38 @@
 var names = null;
 
-// Receive names from inject script
+// Receive add group request from popup
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        console.log("received names from injector");
-        if(request.payload === 'names') {
-            names = request.names;
-
-            sendResponse({status: "success"});
+        if(request.type !== 'addGroupRequest') {
+            return;
         }
+
+        // Request names from content script
+        console.log('request sent to content script');
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function(tabs) {
+            console.log(tabs);
+            chrome.tabs.sendMessage(tabs[0].id, {
+                type: 'getGroupMembersRequest'
+            }, function(response) {
+                console.log(response);
+            });
+        });
+
+        sendResponse({status: "success"});
     }
 );
 
-// Send names to popup on request
+// Receive names payload from content script
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if(request.payload === 'nameRequest') {
-            if(names) {
-                sendResponse({
-                    status: "success",
-                    names: names
-                });
-            } else {
-                sendResponse({
-                    status: "failure",
-                    msg: "Names have not yet been loaded"
-                });
-            }
+        if(request.type !== 'groupMembersPayload') {
+            return;
         }
+
+        names = request.names;
+        sendResponse({status: "success"});
     }
 );

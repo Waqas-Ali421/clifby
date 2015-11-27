@@ -1,6 +1,5 @@
 var CLIFBY_APP = {
-    names: [],
-    sent: false
+    names: []
 }
 
 function send() {
@@ -11,21 +10,21 @@ function send() {
         names.push(element.getElementsByTagName('a')[0].innerText);
     }
 
-    chrome.runtime.sendMessage({
-        names: names,
-        payload: 'names'
-        }, function(response) {
-            if(response.status === "success") {
-                CLIFBY_APP.sent = true;
-            }
-        }
-    );
-
     CLIFBY_APP.names = names;
 
-    if(!CLIFBY_APP.sent) {
-        setTimeout(send, 1000);
-    }
+    chrome.runtime.sendMessage({
+        type: 'groupMembersPayload',
+        names: names,
+    });
 }
 
-send()
+console.log('loading');
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if(request.type !== 'getGroupMembersRequest') {
+            return;
+        }
+
+        send();
+    } 
+);
