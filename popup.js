@@ -33,6 +33,7 @@ chrome.runtime.onMessage.addListener(
         console.log(request.payload);
 
         var groups = request.payload;
+        clearList();
         loadMembers(groups[0].members);
     }
 );

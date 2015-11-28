@@ -1,5 +1,25 @@
 var groups = [];
 
+function indexOfGroup(id) {
+    for(var i = 0; i < groups.length; i++) {
+        if(groups[i].id === id) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+function addGroup(id, name, members) {
+    if(indexOfGroup(id) === -1) {
+        groups.push({
+            id: id,
+            name: name,
+            members: members 
+        });
+    }
+}
+
 // Receive add group request from popup
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -46,11 +66,8 @@ chrome.runtime.onMessage.addListener(
             return;
         }
 
-        groups.push({
-            name: request.name,
-            id: request.id,
-            members: request.members
-        });
+        addGroup(request.id, request.name, request.members);
+        console.log(groups);
 
         chrome.runtime.sendMessage({
             type: 'sendGroupsData',
