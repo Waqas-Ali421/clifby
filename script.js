@@ -3,18 +3,25 @@ var CLIFBY_APP = {
 }
 
 function send() {
-    var elements = document.getElementsByClassName('fsl fwb fcb');
+    var memberElements = document.getElementsByClassName('fsl fwb fcb');
     var names = [];
-    for(var i = 0; i < elements.length; i++) {
-        var element = elements[i];
+    for(var i = 0; i < memberElements.length; i++) {
+        var element = memberElements[i];
         names.push(element.getElementsByTagName('a')[0].innerText);
     }
 
     CLIFBY_APP.names = names;
 
+    var titleElement = document.getElementsByClassName('_5r2h')[0];
+    var groupName = titleElement.innerHTML;
+    var groupId = titleElement.href.split("/").filter(Boolean);
+    groupId = groupId[groupId.length-1];
+
     chrome.runtime.sendMessage({
         type: 'groupDataPayload',
-        names: names,
+        name: groupName,
+        id: groupId,
+        members: names
     });
 }
 

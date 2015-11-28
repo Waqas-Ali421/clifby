@@ -17,7 +17,6 @@ function loadMembers(members) {
 
 document.addEventListener("DOMContentLoaded", function(e) {
     document.getElementById("addGroupButton").addEventListener("click", function() {
-        console.log("sent message");
         chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(data) {
             console.log(data);
         });
@@ -30,6 +29,8 @@ chrome.runtime.onMessage.addListener(
         if(request.type !== 'sendGroupsData') {
             return;
         }
+
+        console.log(request.payload);
 
         var groups = request.payload;
         loadMembers(groups[0].members);

@@ -47,7 +47,9 @@ chrome.runtime.onMessage.addListener(
         }
 
         groups.push({
-            members: request.names
+            name: request.name,
+            id: request.id,
+            members: request.members
         });
 
         chrome.runtime.sendMessage({
