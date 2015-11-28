@@ -6,6 +6,15 @@ function clearList() {
     }
 }
 
+function loadMembers(members) {
+    for(var i = 0; i < members.length; i++) {
+        var name = members[i];
+        var newItem = document.createElement("li");
+        newItem.innerHTML = name;
+        document.getElementsByClassName('list')[0].appendChild(newItem);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function(e) {
     document.getElementById("addGroupButton").addEventListener("click", function() {
         console.log("sent message");
@@ -15,20 +24,16 @@ document.addEventListener("DOMContentLoaded", function(e) {
     }); 
 });
 
+// Process groups data
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if(request.type !== "groupMembersPayload") {
+        if(request.type !== 'sendGroupsData') {
             return;
         }
 
-        var names = request.names;
-
-        clearList();
-        for(var i = 0; i < names.length; i++) {
-            var name = names[i];
-            var newItem = document.createElement("li");
-            newItem.innerHTML = name;
-            document.getElementsByClassName('list')[0].appendChild(newItem);
-        }
+        var groups = request.payload;
+        loadMembers(groups[0].members);
     }
 );
+
+chrome.runtime.sendMessage({type: 'getGroupsRequest'});

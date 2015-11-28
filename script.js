@@ -13,12 +13,11 @@ function send() {
     CLIFBY_APP.names = names;
 
     chrome.runtime.sendMessage({
-        type: 'groupMembersPayload',
+        type: 'groupDataPayload',
         names: names,
     });
 }
 
-console.log('loading');
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if(request.type !== 'getGroupMembersRequest') {

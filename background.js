@@ -1,4 +1,4 @@
-var names = null;
+var groups = [];
 
 // Receive add group request from popup
 chrome.runtime.onMessage.addListener(
@@ -25,14 +25,36 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-// Receive names payload from content script
+// Receive get group data request from popup
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if(request.type !== 'groupMembersPayload') {
+        if(request.type !== 'getGroupsRequest') {
             return;
         }
 
-        names = request.names;
+        chrome.runtime.sendMessage({
+            type: 'sendGroupsData',
+            payload: groups
+        });
+    }
+);
+
+// Receive names payload from content script
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if(request.type !== 'groupDataPayload') {
+            return;
+        }
+
+        groups.push({
+            members: request.names
+        });
+
+        chrome.runtime.sendMessage({
+            type: 'sendGroupsData',
+            payload: groups  
+        });
+
         sendResponse({status: "success"});
     }
 );
