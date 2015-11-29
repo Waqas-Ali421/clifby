@@ -24,8 +24,8 @@ function getActiveGroupId(cb) {
         var urlParts = tab.url.split("/").filter(Boolean);
 
         for(var i = 0; i < urlParts.length; i++) {
-            if(!isNaN(urlParts[i])) {
-                cb(urlParts[i]);
+            if(urlParts[i].toLowerCase() === "groups") {
+                cb(urlParts[i+1]);
             }
         }
 
