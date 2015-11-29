@@ -15,6 +15,29 @@ function loadMembers(members) {
     }
 }
 
+function getActiveGroupId(cb) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        var tab = tabs[0];
+        var id = tab.url.split("/").filter(Boolean);
+        id = id[id.length - 2];
+
+        cb(id);
+    });
+}
+
+function getGroupById(groups, id) {
+    for(var i = 0; i < groups.length; i++) {
+        if(groups[i].id === id) {
+            return groups[i];
+        }
+    }
+
+    return null;
+}
+
 document.addEventListener("DOMContentLoaded", function(e) {
     document.getElementById("addGroupButton").addEventListener("click", function() {
         chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(data) {
@@ -30,11 +53,17 @@ chrome.runtime.onMessage.addListener(
             return;
         }
 
-        console.log(request.payload);
-
         var groups = request.payload;
-        clearList();
-        loadMembers(groups[0].members);
+
+        getActiveGroupId(function(id) {
+            var group = getGroupById(groups, id);
+
+            var titleElement = document.getElementsByClassName('groupTitle')[0];
+            titleElement.innerHTML = group.name;
+
+            clearList();
+            loadMembers(group.members);
+        });
     }
 );
 

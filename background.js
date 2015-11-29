@@ -33,7 +33,6 @@ chrome.runtime.onMessage.addListener(
             active: true,
             currentWindow: true
         }, function(tabs) {
-            console.log(tabs);
             chrome.tabs.sendMessage(tabs[0].id, {
                 type: 'getGroupMembersRequest'
             }, function(response) {
