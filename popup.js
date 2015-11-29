@@ -21,10 +21,15 @@ function getActiveGroupId(cb) {
         currentWindow: true
     }, function(tabs) {
         var tab = tabs[0];
-        var id = tab.url.split("/").filter(Boolean);
-        id = id[id.length - 2];
+        var urlParts = tab.url.split("/").filter(Boolean);
 
-        cb(id);
+        for(var i = 0; i < urlParts.length; i++) {
+            if(!isNaN(urlParts[i])) {
+                cb(urlParts[i]);
+            }
+        }
+
+        cb(null, {msg: 'no id found'});
     });
 }
 
@@ -55,9 +60,13 @@ chrome.runtime.onMessage.addListener(
 
         var groups = request.payload;
 
-        getActiveGroupId(function(id) {
-            var group = getGroupById(groups, id);
+        getActiveGroupId(function(id, err) {
+            if(err) {
+                console.log(err);
+                return;
+            }
 
+            var group = getGroupById(groups, id);
             var titleElement = document.getElementsByClassName('groupTitle')[0];
             titleElement.innerHTML = group.name;
 
