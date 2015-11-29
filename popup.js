@@ -72,14 +72,6 @@ function displayMessage(msg) {
     body.appendChild(msgElement);
 }
 
-document.addEventListener("DOMContentLoaded", function(e) {
-    document.getElementById("addGroupButton").addEventListener("click", function() {
-        chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(data) {
-            console.log(data);
-        });
-    }); 
-});
-
 // Process groups data
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
