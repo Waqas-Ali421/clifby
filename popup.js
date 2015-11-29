@@ -127,7 +127,14 @@ chrome.runtime.onMessage.addListener(
                 chrome.tabs.sendMessage(tabs[0].id, {
                     type: 'getModalMembersRequest'
                 }, function(response) {
-                    console.log(response.payload.members);
+                    var modalMembers = response.payload.members;
+                    var members = group.members;
+                    var nonModalMembers = members.filter(function(el) {
+                        return modalMembers.indexOf(el) < 0;
+                    });
+
+                    clearList();
+                    loadMembers(nonModalMembers);
                 });
             });
         });
