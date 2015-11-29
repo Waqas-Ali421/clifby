@@ -29,7 +29,24 @@ function getActiveGroupId(cb) {
             }
         }
 
-        cb(null, {msg: 'no id found'});
+        cb(null);
+    });
+}
+
+function isMembersPage(cb) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        var tab = tabs[0];
+        var urlParts = tab.url.split("/").filter(Boolean);
+        var lastPart = urlParts[urlParts.length - 1];
+
+        if(lastPart.toLowerCase() === "members") {
+            cb(true);
+        } else {
+            cb(false);
+        }
     });
 }
 
@@ -41,6 +58,18 @@ function getGroupById(groups, id) {
     }
 
     return null;
+}
+
+function displayMessage(msg) {
+    var body = document.body;
+    while(body.firstChild) {
+        body.removeChild(body.firstChild);
+    }
+
+    var msgElement = document.createElement("h1");
+    msgElement.innerHTML = msg;
+
+    body.appendChild(msgElement);
 }
 
 document.addEventListener("DOMContentLoaded", function(e) {
@@ -60,13 +89,29 @@ chrome.runtime.onMessage.addListener(
 
         var groups = request.payload;
 
-        getActiveGroupId(function(id, err) {
-            if(err) {
-                console.log(err);
+        getActiveGroupId(function(id) {
+            if(!id) {
+                console.log('no id found');
                 return;
             }
 
             var group = getGroupById(groups, id);
+
+            if(!group) {
+                // current group has not yet been added
+                isMembersPage(function(isMembers) {
+                    if(!isMembers) {
+                        displayMessage("This group has not been added yet.");
+                    } else {
+                        chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(data) {
+                            console.log(data);
+                            displayMessage("X group has been added!");
+                        });
+                    }
+                });
+                return;
+            }
+
             var titleElement = document.getElementsByClassName('groupTitle')[0];
             titleElement.innerHTML = group.name;
 
