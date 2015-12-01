@@ -48,6 +48,12 @@ function getModalMembers(modal) {
     return members;
 }
 
+function getModalTitle(modal) {
+    var titleElement = modal.getElementsByClassName('_52c9')[0];
+
+    return titleElement.innerHTML;
+}
+
 function send() {
     var memberElements = document.getElementsByClassName('fsl fwb fcb');
     var names = [];
@@ -81,6 +87,7 @@ chrome.runtime.onMessage.addListener(
     } 
 );
 
+// Responds to ModalMembers request
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if(request.type !== 'getModalMembersRequest') {
@@ -90,12 +97,13 @@ chrome.runtime.onMessage.addListener(
         if(isModalShowing()) {
             var modal = getDisplayModal();
             var members = getModalMembers(modal);
+            var title = getModalTitle(modal);
 
-            console.log(members);
             sendResponse({
                 status: 'success',
                 payload: {
-                    members: members
+                    members: members,
+                    title: title
                 }
             });
         } else {

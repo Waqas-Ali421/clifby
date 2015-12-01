@@ -15,6 +15,28 @@ function loadMembers(members) {
     }
 }
 
+function changeListTitle(title) {
+    var titleElement = document.getElementsByClassName('listTitle')[0];
+
+    titleElement.innerHTML = title;
+}
+
+function oppositeTitle(title) {
+    title = title.toLowerCase();
+
+    switch(title) {
+        case "people who saw this":
+            return "People who did not see this"
+            break;
+        case "people who like this":
+            return "People who did not like this"
+            break;
+        case "people who voted for this option":
+            return "People who did not vote for this option"
+            break;
+    }
+}
+
 function getActiveGroupId(cb) {
     chrome.tabs.query({
         active: true,
@@ -120,6 +142,7 @@ chrome.runtime.onMessage.addListener(
                     type: 'getModalMembersRequest'
                 }, function(response) {
                     var modalMembers = response.payload.members;
+                    var title = oppositeTitle(response.payload.title);
                     var members = group.members;
                     var nonModalMembers = members.filter(function(el) {
                         return modalMembers.indexOf(el) < 0;
@@ -127,6 +150,7 @@ chrome.runtime.onMessage.addListener(
 
                     clearList();
                     loadMembers(nonModalMembers);
+                    changeListTitle(title);
                 });
             });
         });
