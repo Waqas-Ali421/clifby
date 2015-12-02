@@ -1,5 +1,6 @@
 var CLIFBY_APP = {
-    names: []
+    names: [],
+    posterName: null
 }
 
 function isModalShowing() {
@@ -76,6 +77,7 @@ function send(cb) {
     });
 }
 
+// Respond to get Group Members request (adds group)
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if(request.type !== 'getGroupMembersRequest') {
@@ -102,6 +104,7 @@ chrome.runtime.onMessage.addListener(
                 status: 'success',
                 payload: {
                     members: members,
+                    poster: CLIFY_APP.posterName,
                     title: title
                 }
             });
@@ -112,3 +115,22 @@ chrome.runtime.onMessage.addListener(
         }
     }
 );
+
+// add listener to 'seen' links
+var seenElements = document.getElementsByClassName('UFISeenCount');
+for(var i = 0; i < seenElements.length; i++) {
+    var ele = seenElements[i];
+
+    ele.addEventListener("click", function(e) {
+        var ele = e.target;
+
+        while(ele.className.indexOf('userContentWrapper') == -1) {
+            ele = ele.parentNode;
+        }
+
+        var container = ele;
+
+        var name = container.getElementsByClassName('fwb fcg')[0].firstChild.innerHTML;
+        CLIFBY_APP.posterName = name;
+    });
+}
