@@ -15,10 +15,43 @@ function loadMembers(members) {
     }
 }
 
+function changeGroupTitle(title) {
+    var titleElement = document.getElementsByClassName('groupTitle')[0];
+    titleElement.innerHTML = title;
+}
+
 function changeListTitle(title) {
     var titleElement = document.getElementsByClassName('listTitle')[0];
 
     titleElement.innerHTML = title;
+}
+
+function loadGroup(group) {
+    changeGroupTitle(group.name);
+    clearList();
+    loadMembers(group.members);
+}
+
+function checkAndLoadModalMembers(group) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+            type: 'getModalMembersRequest'
+        }, function(response) {
+            var modalMembers = response.payload.members;
+            var title = oppositeTitle(response.payload.title);
+            var members = group.members;
+            var nonModalMembers = members.filter(function(el) {
+                return modalMembers.indexOf(el) < 0;
+            });
+
+            clearList();
+            loadMembers(nonModalMembers);
+            changeListTitle(title);
+        });
+    });
 }
 
 function oppositeTitle(title) {
@@ -95,59 +128,31 @@ function displayMessage(msg) {
 }
 
 chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
-    console.log(response);
     var groups = response.groups;
     
-    console.log('hi');
     getActiveGroupId(function(id) {
-        console.log(id);
         if(!id) {
-            console.log('no id found');
+            console.log('ERROR: no id found. Not currently in a facebook groups page');
             return;
         }
 
         var group = getGroupById(groups, id);
-
         if(!group) {
             // current group has not yet been added
             isMembersPage(function(isMembers) {
-                console.log(isMembers);
-                if(!isMembers) {
-                    displayMessage("This group has not been added yet.");
-                } else {
-                    console.log('hjihi');
+                if(isMembers) {
+                    // user is on the /members/ page so we can add the group
                     chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(response) {
-                        console.log(response);
                         displayMessage(response.name + " has been added!");
                     });
+                } else {
+                    displayMessage("This group has not been added yet.");
                 }
             });
         } else {
-            var titleElement = document.getElementsByClassName('groupTitle')[0];
-            titleElement.innerHTML = group.name;
-
-            clearList();
-            loadMembers(group.members);
-
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {
-                    type: 'getModalMembersRequest'
-                }, function(response) {
-                    var modalMembers = response.payload.members;
-                    var title = oppositeTitle(response.payload.title);
-                    var members = group.members;
-                    var nonModalMembers = members.filter(function(el) {
-                        return modalMembers.indexOf(el) < 0;
-                    });
-
-                    clearList();
-                    loadMembers(nonModalMembers);
-                    changeListTitle(title);
-                });
-            });
+            // group has already been added and we have its data
+            loadGroup(group);
+            checkAndLoadModalMembers(group);
         }
     });
 });
