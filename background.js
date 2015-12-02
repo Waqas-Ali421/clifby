@@ -37,10 +37,18 @@ chrome.runtime.onMessage.addListener(
                 type: 'getGroupMembersRequest'
             }, function(response) {
                 console.log(response);
+                addGroup(response.id, response.name, response.members);
+
+                sendResponse({
+                    status: "success",
+                    id: response.id,
+                    name: response.name,
+                    members: response.members
+                });
             });
         });
 
-        sendResponse({status: "success"});
+        return true;
     }
 );
 
@@ -51,9 +59,8 @@ chrome.runtime.onMessage.addListener(
             return;
         }
 
-        chrome.runtime.sendMessage({
-            type: 'sendGroupsData',
-            payload: groups
+        sendResponse({
+            groups: groups
         });
     }
 );

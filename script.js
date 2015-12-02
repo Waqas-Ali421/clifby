@@ -54,7 +54,7 @@ function getModalTitle(modal) {
     return titleElement.innerHTML;
 }
 
-function send() {
+function send(cb) {
     var memberElements = document.getElementsByClassName('fsl fwb fcb');
     var names = [];
     for(var i = 0; i < memberElements.length; i++) {
@@ -69,11 +69,11 @@ function send() {
     var groupId = titleElement.href.split("/").filter(Boolean);
     groupId = groupId[groupId.length-1];
 
-    chrome.runtime.sendMessage({
-        type: 'groupDataPayload',
+    console.log(groupName);
+    cb({
         name: groupName,
         id: groupId,
-        members: names
+        members: names         
     });
 }
 
@@ -83,7 +83,7 @@ chrome.runtime.onMessage.addListener(
             return;
         }
 
-        send();
+        send(sendResponse);
     } 
 );
 

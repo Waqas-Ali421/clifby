@@ -94,45 +94,40 @@ function displayMessage(msg) {
     body.appendChild(msgElement);
 }
 
-// Process groups data
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if(request.type !== 'sendGroupsData') {
+chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
+    console.log(response);
+    var groups = response.groups;
+    
+    console.log('hi');
+    getActiveGroupId(function(id) {
+        console.log(id);
+        if(!id) {
+            console.log('no id found');
             return;
         }
 
-        var groups = request.payload;
+        var group = getGroupById(groups, id);
 
-        getActiveGroupId(function(id) {
-            if(!id) {
-                console.log('no id found');
-                return;
-            }
-
-            var group = getGroupById(groups, id);
-
-            if(!group) {
-                // current group has not yet been added
-                isMembersPage(function(isMembers) {
-                    if(!isMembers) {
-                        displayMessage("This group has not been added yet.");
-                    } else {
-                        chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(data) {
-                            console.log(data);
-                            displayMessage("X group has been added!");
-                        });
-                    }
-                });
-                return;
-            }
-
+        if(!group) {
+            // current group has not yet been added
+            isMembersPage(function(isMembers) {
+                console.log(isMembers);
+                if(!isMembers) {
+                    displayMessage("This group has not been added yet.");
+                } else {
+                    console.log('hjihi');
+                    chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(response) {
+                        console.log(response);
+                        displayMessage(response.name + " has been added!");
+                    });
+                }
+            });
+        } else {
             var titleElement = document.getElementsByClassName('groupTitle')[0];
             titleElement.innerHTML = group.name;
 
             clearList();
             loadMembers(group.members);
-
-            console.log("sending modal request");
 
             chrome.tabs.query({
                 active: true,
@@ -153,8 +148,6 @@ chrome.runtime.onMessage.addListener(
                     changeListTitle(title);
                 });
             });
-        });
-    }
-);
-
-chrome.runtime.sendMessage({type: 'getGroupsRequest'});
+        }
+    });
+});
