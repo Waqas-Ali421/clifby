@@ -69,7 +69,6 @@ function send(cb) {
     var groupId = titleElement.href.split("/").filter(Boolean);
     groupId = groupId[groupId.length-1];
 
-    console.log(groupName);
     cb({
         name: groupName,
         id: groupId,

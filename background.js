@@ -64,22 +64,3 @@ chrome.runtime.onMessage.addListener(
         });
     }
 );
-
-// Receive names payload from content script
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if(request.type !== 'groupDataPayload') {
-            return;
-        }
-
-        addGroup(request.id, request.name, request.members);
-        console.log(groups);
-
-        chrome.runtime.sendMessage({
-            type: 'sendGroupsData',
-            payload: groups  
-        });
-
-        sendResponse({status: "success"});
-    }
-);
