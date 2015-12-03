@@ -1,6 +1,7 @@
 var CLIFBY_APP = {
     names: [],
-    posterName: null
+    posterName: null,
+    seenListeners: []
 }
 
 function isModalShowing() {
@@ -116,14 +117,21 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-var tid = setInterval(function() {
-    if(document.readyState !== 'complete') return;
-
+setInterval(function() {
     // add listener to 'seen' links
     var seenElements = document.getElementsByClassName('UFISeenCount');
     for(var i = 0; i < seenElements.length; i++) {
         var ele = seenElements[i];
-        console.log(ele);
+        var seenId = ele.href;
+
+        if(CLIFBY_APP.seenListeners.indexOf(seenId) !== -1) {
+            // listener already added
+            console.log('already added: ' + seenId);
+            continue;
+        }
+
+        CLIFBY_APP.seenListeners.push(seenId);
+
         ele.addEventListener("click", function(e) {
             var ele = e.target;
 
@@ -138,6 +146,4 @@ var tid = setInterval(function() {
             console.log(name);
         });
     }
-
-    clearInterval(tid);
-}, 100);
+}, 500);
