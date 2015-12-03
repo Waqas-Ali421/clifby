@@ -6,6 +6,13 @@ function clearList() {
     }
 }
 
+function clearHTML() {
+    var body = document.body;
+    while(body.firstChild) {
+        body.removeChild(body.firstChild);
+    }
+}
+
 function loadMembers(members) {
     for(var i = 0; i < members.length; i++) {
         var name = members[i];
@@ -110,6 +117,24 @@ function isMembersPage(cb) {
     });
 }
 
+function isGroupsPage(cb) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function(tabs) {
+        var tab = tabs[0];
+        var urlParts = tab.url.split("/").filter(Boolean);
+
+        console.log(urlParts);
+        if(urlParts.indexOf('www.facebook.com') !== -1 &&
+           urlParts.indexOf('groups') !== -1) {
+            cb(true);
+        } else {
+            cb(false);
+        }
+    });
+}
+
 function getGroupById(groups, id) {
     for(var i = 0; i < groups.length; i++) {
         if(groups[i].id === id) {
@@ -121,43 +146,47 @@ function getGroupById(groups, id) {
 }
 
 function displayMessage(msg) {
-    var body = document.body;
-    while(body.firstChild) {
-        body.removeChild(body.firstChild);
-    }
+    clearHTML()
 
+    var body = document.body;
     var msgElement = document.createElement("h1");
     msgElement.innerHTML = msg;
 
     body.appendChild(msgElement);
 }
 
-chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
-    var groups = response.groups;
-    
-    getActiveGroupId(function(id) {
-        if(!id) {
-            console.log('ERROR: no id found. Not currently in a facebook groups page');
-            return;
-        }
+isGroupsPage(function(isGroups) {
+    if(isGroups) {
+        chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
+            var groups = response.groups;
+            
+            getActiveGroupId(function(id) {
+                if(!id) {
+                    console.log('ERROR: no id found. Not currently in a facebook groups page');
+                    return;
+                }
 
-        var group = getGroupById(groups, id);
-        if(!group) {
-            // current group has not yet been added
-            isMembersPage(function(isMembers) {
-                if(isMembers) {
-                    // user is on the /members/ page so we can add the group
-                    chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(response) {
-                        displayMessage(response.name + " has been added!");
+                var group = getGroupById(groups, id);
+                if(!group) {
+                    // current group has not yet been added
+                    isMembersPage(function(isMembers) {
+                        if(isMembers) {
+                            // user is on the /members/ page so we can add the group
+                            chrome.runtime.sendMessage({type: 'addGroupRequest'}, function(response) {
+                                displayMessage(response.name + " has been added!");
+                            });
+                        } else {
+                            displayMessage("This group has not been added yet.");
+                        }
                     });
                 } else {
-                    displayMessage("This group has not been added yet.");
+                    // group has already been added and we have its data
+                    loadGroup(group);
+                    checkAndLoadModalMembers(group);
                 }
             });
-        } else {
-            // group has already been added and we have its data
-            loadGroup(group);
-            checkAndLoadModalMembers(group);
-        }
-    });
+        });
+    } else {
+        clearHTML();
+    }
 });
