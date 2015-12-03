@@ -126,7 +126,6 @@ setInterval(function() {
 
         if(CLIFBY_APP.seenListeners.indexOf(seenId) !== -1) {
             // listener already added
-            console.log('already added: ' + seenId);
             continue;
         }
 
@@ -141,9 +140,13 @@ setInterval(function() {
 
             var container = ele;
 
-            var name = container.getElementsByClassName('fwb fcg')[0].firstChild.innerHTML;
+            var name = container.
+                        getElementsByClassName('fcg')[0].
+                        getElementsByClassName('fwb')[0].
+                        firstChild.
+                        innerHTML;
+
             CLIFBY_APP.posterName = name;
-            console.log(name);
         });
     }
 }, 500);
