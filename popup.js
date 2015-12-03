@@ -43,6 +43,11 @@ function checkAndLoadModalMembers(group) {
             var modalMembers = response.payload.members;
             var title = oppositeTitle(response.payload.title);
             var members = group.members;
+
+            if(title === "People who did not see this") {
+                modalMembers.push(response.payload.poster);
+            }
+
             var nonModalMembers = members.filter(function(el) {
                 return modalMembers.indexOf(el) < 0;
             });

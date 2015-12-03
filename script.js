@@ -104,7 +104,7 @@ chrome.runtime.onMessage.addListener(
                 status: 'success',
                 payload: {
                     members: members,
-                    poster: CLIFY_APP.posterName,
+                    poster: CLIFBY_APP.posterName,
                     title: title
                 }
             });
@@ -116,21 +116,28 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-// add listener to 'seen' links
-var seenElements = document.getElementsByClassName('UFISeenCount');
-for(var i = 0; i < seenElements.length; i++) {
-    var ele = seenElements[i];
+var tid = setInterval(function() {
+    if(document.readyState !== 'complete') return;
 
-    ele.addEventListener("click", function(e) {
-        var ele = e.target;
+    // add listener to 'seen' links
+    var seenElements = document.getElementsByClassName('UFISeenCount');
+    for(var i = 0; i < seenElements.length; i++) {
+        var ele = seenElements[i];
+        console.log(ele);
+        ele.addEventListener("click", function(e) {
+            var ele = e.target;
 
-        while(ele.className.indexOf('userContentWrapper') == -1) {
-            ele = ele.parentNode;
-        }
+            while(ele.className.indexOf('userContentWrapper') == -1) {
+                ele = ele.parentNode;
+            }
 
-        var container = ele;
+            var container = ele;
 
-        var name = container.getElementsByClassName('fwb fcg')[0].firstChild.innerHTML;
-        CLIFBY_APP.posterName = name;
-    });
-}
+            var name = container.getElementsByClassName('fwb fcg')[0].firstChild.innerHTML;
+            CLIFBY_APP.posterName = name;
+            console.log(name);
+        });
+    }
+
+    clearInterval(tid);
+}, 100);
