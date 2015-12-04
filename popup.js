@@ -187,6 +187,6 @@ isGroupsPage(function(isGroups) {
             });
         });
     } else {
-        clearHTML();
+        displayMessage("Not a valid page for clifby!");
     }
 });
