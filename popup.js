@@ -190,3 +190,16 @@ isGroupsPage(function(isGroups) {
         displayMessage("Not a valid page for clifby!");
     }
 });
+
+var form = document.getElementsByTagName('form')[0];
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    var BB = get_blob();
+    saveAs(
+          new BB(
+              ['hello eric']
+            , {type: "text/plain;charset=" + document.characterSet}
+        )
+        , "testfile.txt"
+    );
+}, false);
