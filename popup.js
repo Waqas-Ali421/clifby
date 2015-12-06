@@ -155,6 +155,20 @@ function displayMessage(msg) {
     body.appendChild(msgElement);
 }
 
+function createMembersBlob() {
+    var outputStr = "";
+    var memberElements = document.getElementsByTagName('li');
+
+    for(var i = 0; i < memberElements.length; i++) {
+        var name = memberElements[i].innerHTML;
+        outputStr += name + "\n";
+    }
+
+    var blob = new Blob([outputStr], {type: "text/plain; charset=utf-8"});
+
+    return blob;
+}
+
 isGroupsPage(function(isGroups) {
     if(isGroups) {
         chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
@@ -195,8 +209,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     var form = document.getElementsByTagName('form')[0];
     form.addEventListener("submit", function(event) {
         event.preventDefault();
-        var blob = new Blob(["Hello, world!"], {type: "text/plain; charset=utf-8"});
-
-        saveAs(blob, "test.txt");
+        var blob = createMembersBlob();
+        saveAs(blob, "members.txt");
     }, false);
 });
