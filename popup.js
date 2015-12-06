@@ -191,15 +191,12 @@ isGroupsPage(function(isGroups) {
     }
 });
 
-var form = document.getElementsByTagName('form')[0];
-form.addEventListener("submit", function(event) {
-    event.preventDefault();
-    var BB = get_blob();
-    saveAs(
-          new BB(
-              ['hello eric']
-            , {type: "text/plain;charset=" + document.characterSet}
-        )
-        , "testfile.txt"
-    );
-}, false);
+document.addEventListener("DOMContentLoaded", function(e) {
+    var form = document.getElementsByTagName('form')[0];
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        var blob = new Blob(["Hello, world!"], {type: "text/plain; charset=utf-8"});
+
+        saveAs(blob, "test.txt");
+    }, false);
+});
