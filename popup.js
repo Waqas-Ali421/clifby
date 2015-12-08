@@ -169,6 +169,11 @@ function createMembersBlob() {
     return blob;
 }
 
+function createFilename() {
+    var dateString = dateFormat(new Date(), "mmddyyyy_Hmmss");
+    return "ClifbyMembers" + dateString + ".txt"
+}
+
 isGroupsPage(function(isGroups) {
     if(isGroups) {
         chrome.runtime.sendMessage({type: 'getGroupsRequest'}, function(response) {
@@ -210,6 +215,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
     form.addEventListener("submit", function(event) {
         event.preventDefault();
         var blob = createMembersBlob();
-        saveAs(blob, "members.txt");
+        saveAs(blob, createFilename());
     }, false);
 });
