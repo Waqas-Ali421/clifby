@@ -17,6 +17,12 @@ function addGroup(id, name, members) {
             name: name,
             members: members 
         });
+
+        chrome.storage.sync.set({
+            'groups': groups
+        }, function() {
+            console.log('saved to chrome storage');
+        });
     }
 }
 
