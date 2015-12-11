@@ -70,3 +70,8 @@ chrome.runtime.onMessage.addListener(
         });
     }
 );
+
+// check for groups from storage
+chrome.storage.sync.get('groups', function(items) {
+    groups = items.groups;
+});
