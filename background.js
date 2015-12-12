@@ -73,5 +73,11 @@ chrome.runtime.onMessage.addListener(
 
 // check for groups from storage
 chrome.storage.sync.get('groups', function(items) {
-    groups = items.groups;
+    if(item.hasOwnPropert('groups')) {
+        groups = items.groups;
+    } else {
+        groups = [];
+    }
+
+    console.log(items);
 });
