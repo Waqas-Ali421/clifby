@@ -6,6 +6,12 @@ function clearList() {
     }
 }
 
+function clearButton() {
+    var form = document.getElementsByTagName('form')[0];
+
+    form.parentNode.removeChild(form);
+}
+
 function clearHTML() {
     var body = document.body;
     while(body.firstChild) {
@@ -58,6 +64,10 @@ function checkAndLoadModalMembers(group) {
             var nonModalMembers = members.filter(function(el) {
                 return modalMembers.indexOf(el) < 0;
             });
+
+            if(nonModalMembers.length === 0) {
+                clearButton();
+            }
 
             clearList();
             loadMembers(nonModalMembers);
